@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Meal Planner</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>Meal Planner</h1>
+      <p>Plan your week, save recipes, and generate a smart shopping list.</p>
+    </div>
+    <div class="header-actions">
+      <button id="demo-data" class="ghost">Load demo data</button>
+      <button id="export-data" class="ghost">Export JSON</button>
+      <label class="file-input ghost">
+        Import JSON
+        <input type="file" id="import-data" accept="application/json" />
+      </label>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <h2>Add recipe</h2>
+      <form id="recipe-form" class="stack">
+        <div class="grid">
+          <label>
+            Recipe name
+            <input type="text" id="recipe-name" required />
+          </label>
+          <label>
+            Servings
+            <input type="number" id="recipe-servings" min="1" required />
+          </label>
+        </div>
+        <label>
+          Tags (comma separated)
+          <input type="text" id="recipe-tags" placeholder="vegetarian, quick" />
+        </label>
+        <label>
+          Instructions
+          <textarea id="recipe-instructions" rows="4" required></textarea>
+        </label>
+        <div>
+          <h3>Ingredients</h3>
+          <div id="ingredient-list" class="stack"></div>
+          <button type="button" id="add-ingredient" class="ghost">Add ingredient</button>
+        </div>
+        <button type="submit">Save recipe</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Recipes</h2>
+        <div class="search">
+          <input type="search" id="recipe-search" placeholder="Search recipes or tags" />
+        </div>
+      </div>
+      <div id="recipe-list" class="recipe-list"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Weekly planner</h2>
+        <div class="week-picker">
+          <label>
+            Week starting
+            <input type="date" id="week-start" />
+          </label>
+        </div>
+      </div>
+      <div id="planner" class="planner"></div>
+      <button id="save-plan">Save plan</button>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Shopping list</h2>
+        <button id="refresh-shopping" class="ghost">Generate list</button>
+      </div>
+      <div id="shopping-list" class="shopping-list"></div>
+    </section>
+  </main>
+
+  <template id="ingredient-row-template">
+    <div class="ingredient-row">
+      <input type="text" class="ingredient-name" placeholder="Ingredient" required />
+      <input type="number" class="ingredient-qty" min="0" step="0.01" placeholder="Qty" required />
+      <select class="ingredient-unit" required>
+        <option value="g">g</option>
+        <option value="kg">kg</option>
+        <option value="ml">ml</option>
+        <option value="l">l</option>
+        <option value="tsp">tsp</option>
+        <option value="tbsp">tbsp</option>
+        <option value="pcs">pcs</option>
+      </select>
+      <button type="button" class="remove-ingredient ghost">Remove</button>
+    </div>
+  </template>
+
+  <template id="planner-row-template">
+    <div class="planner-row">
+      <div class="planner-day"></div>
+      <div class="planner-meals">
+        <label>Breakfast<select data-meal="breakfast"></select></label>
+        <label>Lunch<select data-meal="lunch"></select></label>
+        <label>Dinner<select data-meal="dinner"></select></label>
+      </div>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
