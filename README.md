@@ -1,24 +1,59 @@
-# Meal Planner
+# Savings Projector (ISK)
 
-A lightweight, single-page meal planner built with HTML, CSS, and vanilla JavaScript. It stores data in the browser using `localStorage` and helps you plan meals, manage recipes, and create a combined shopping list.
+A full-stack, multi-scenario savings projection dashboard for Icelandic Krona (ISK). It projects savings month-by-month, supports scenario comparison, and includes inflation/interest transitions, progressive tax brackets, and real vs nominal views.
 
-## Features
+## Stack
+- Next.js (App Router) + TypeScript
+- Prisma + SQLite
+- Tailwind CSS (dark neon analytics dashboard styling)
+- Recharts
+- Business logic in `/lib/calc` with unit tests
 
-- Create recipes with servings, tags, ingredients, and instructions.
-- Plan meals for breakfast, lunch, and dinner for a chosen Monday–Sunday week.
-- Generate a combined shopping list with merged ingredients by matching units.
-- Mark shopping list items as bought.
-- Search recipes by name or tags.
-- Export or import all data as JSON.
-- Load demo data to explore the app quickly.
+## Setup
+```bash
+npm install
+```
 
-## Getting started
+### Database
+```bash
+npm run prisma:generate
+npm run prisma:migrate
+npm run prisma:seed
+```
 
-1. Open `index.html` in your browser.
-2. Add recipes and assign them to a weekly plan.
-3. Click **Generate list** to build your shopping list.
+### Run the app
+```bash
+npm run dev
+```
 
-## Notes
+### Tests
+```bash
+npm run test
+```
 
-- All quantities use metric units: g, kg, ml, l, tsp, tbsp, pcs.
-- Data is stored locally in your browser, no login required.
+## Key formulas & rules
+- **Interpolation:** Linear month-by-month interpolation from current → target.
+  - `interpolateLinear(start, end, stepIndex, totalSteps)`
+- **Monthly rates:**
+  - Interest: `(1 + APY)^(1/12) - 1`
+  - Inflation: `(1 + annualInflation)^(1/12) - 1`
+- **Salary increases:** Applied as a **step increase** every 12 months at months 13, 25, 37, ...
+- **Expense increases:** Same step rule, with a toggle:
+  - Off: `effectiveAnnual = annualIncreasePct`
+  - On: `effectiveAnnual = annualIncreasePct + inflationAnnual`
+- **Taxes:**
+  - Pension: `round(gross * pensionPct)`
+  - Taxable: `max(0, gross - pension - personalAllowance)`
+  - Progressive brackets with editable limits and rates
+- **Savings balance:**
+  - `preInterest = prevBalance + savingsDeposit`
+  - `interestEarned = round(preInterest * monthlyInterestRate)`
+  - `balance = preInterest + interestEarned`
+- **Real (today's ISK):**
+  - `realValue = nominal / cumulativeInflationIndex`
+
+## CSV exports
+- Monthly projection CSV
+- Summary CSV
+
+Dates are formatted as `dd.mm.yyyy` and all ISK values are integers.

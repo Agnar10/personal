@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String
+  scenarios Scenario[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Scenario {
+  id           String                @id @default(cuid())
+  name         String
+  userId       String
+  user         User                  @relation(fields: [userId], references: [id])
+  assumptions  ScenarioAssumptions?
+  expenseItems ExpenseItem[]
+  incomeEvents IncomeEvent[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+}
+
+model ScenarioAssumptions {
+  id                           String   @id @default(cuid())
+  scenarioId                   String   @unique
+  scenario                     Scenario @relation(fields: [scenarioId], references: [id])
+  startDate                    DateTime
+  durationMonths               Int
+  startingSavingsBalanceISK    Int
+  monthlySalaryBeforeTaxISK    Int
+  annualSalaryIncreasePct      Float
+  salaryChangeMonth            Int?
+  newMonthlySalaryBeforeTaxISK Int?
+  currentSavingsAPY            Float
+  targetSavingsAPY             Float
+  interestTransitionMonths     Int
+  currentInflationAnnual       Float
+  targetInflationAnnual        Float
+  inflationTransitionMonths    Int
+  pensionPct                   Float
+  personalAllowanceMonthlyISK  Int
+  bracket1LimitISK             Int
+  bracket2LimitISK             Int
+  bracket1Rate                 Float
+  bracket2Rate                 Float
+  bracket3Rate                 Float
+  inflationImpactsExpenses     Boolean @default(false)
+}
+
+model ExpenseItem {
+  id                String   @id @default(cuid())
+  scenarioId        String
+  scenario          Scenario @relation(fields: [scenarioId], references: [id])
+  name              String
+  monthlyAmountISK  Int
+  startsMonth       Int      @default(1)
+  endsMonth         Int?
+  annualIncreasePct Float    @default(0.02)
+  enabled           Boolean  @default(true)
+}
+
+model IncomeEvent {
+  id            String   @id @default(cuid())
+  scenarioId    String
+  scenario      Scenario @relation(fields: [scenarioId], references: [id])
+  name          String
+  month         Int
+  amountISK     Int
+  recurring     Boolean  @default(false)
+  annualIncreasePct Float @default(0)
+}
